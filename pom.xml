@@ -15,7 +15,6 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <maven.compiler.source>1.8</maven.compiler.source>
     <maven.compiler.target>1.8</maven.compiler.target>
-   <!-- <exec.mainClass>project1.reesebenson.Watch</exec.mainClass> -->
    <exec.mainClass>sample1.App</exec.mainClass>
 </properties>
 
