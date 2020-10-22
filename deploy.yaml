@@ -27,11 +27,11 @@ kind: Service
 metadata:
     name: sample-service
 spec:
-    type: NodePort
+    type: LoadBalancer
     selector:
         app: sample-app
     ports:
-        - port: 8080
+        - port: 30005
           name: sample-app
           targetPort: 8080
           nodePort: 30005
