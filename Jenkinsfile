@@ -46,7 +46,7 @@ pipeline {
         stage('Rollout') {
             steps {
                     sh 'kubectl apply -f deploy.yaml'
-                    //sh 'kubectl rollout restart deployment/sample-deployment'
+                    //sh 'kubectl rollout restart deployment/sample-app'
             }
         }
                                                                                                                     }

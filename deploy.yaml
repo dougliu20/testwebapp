@@ -1,36 +1,37 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: sample-deployment
-  labels:
-    app: sample
+    name: sample-app
+    labels:
+        app: sample-app
 spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: sample
-  template:
-    metadata:
-      labels:
-        app: sample
-    spec:
-      containers:
-        - name: sample
-          image: dougliu20/testwebapp
-          ports:
-            - containerPort: 80
+    replicas: 1
+    selector:
+        matchLabels:
+            app: sample-app
+    template:
+        metadata:
+            labels:
+                app: sample-app
+        spec:
+            containers:
+            -   name: sample-app
+                image: dougliu/testweb
+                imagePullPolicy: Always
+            restartPolicy: Always
+
 ---
+
 apiVersion: v1
 kind: Service
 metadata:
-  name: sample-service
+    name: sample-service
 spec:
-  type: NodePort
-  selector:
-    app: sample
-  ports:
-    - name: web-interface
-      protocol: TCP
-      nodePort: 30001
-      port: 80
-      targetPort: 80
+    type: NodePort
+    selector:
+        app: sample-app
+    ports:
+        - port: 8080
+          name: sample-app
+          targetPort: 8080
+          nodePort: 30005
