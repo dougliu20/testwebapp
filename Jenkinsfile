@@ -2,31 +2,51 @@ pipeline {
     agent any
 
     tools {
-        // Install the Maven version configured as "M3" and add it to the path.
-        maven "M3"
+        maven 'M3'
     }
 
     stages {
-        stage('GitHub Pull') {
+        stage('Pull from Git') {
             steps {
-                // Get some code from a GitHub repository
-                git 'https://github.com/dougliu20/testwebapp'
+                git url: "https://github.com/dougliu20/testwebapp", branch: "master"
+            }
+        }
+
+        stage('Test using Maven') {
+            steps {
+                sh 'mvn test -Dcheckstyle.skip=true'
             }
         }
         stage('Build') {
             steps {
-                // Run Maven on a Unix agent.
-                sh "mvn clean package"
-
+                sh 'mvn package -DskipTests=true -Dcheckstyle.skip=true'
+            }
+        }    
+        stage('Check with SonarCloud') {
+            steps {
+                withSonarQubeEnv("SonarCloud")
+                    {
+                    sh "mvn verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar"
+                    }
             }
         }
-        stage('Sonar Cloud Test') {
+        stage('Upload Docker Image') {
             steps {
-                withSonarQubeEnv("<Name of SonarQube server>")
-                {
-                    sh "mvn verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar"
+                script {
+                   docker.withTool('docker') {
+                        repoId = "dougliu/testweb"
+                        image = docker.build(repoId)
+                        docker.withRegistry("https://registry.hub.docker.com", "dockercred") {
+                        image.push()
+                        }
+                    }
                 }
             }
         }
-    }
+        stage('Rollout') {
+            steps {
+                    sh 'kubectl rollout restart deployment/sample-deployment'
+            }
+        }
+                                                                                                                    }
 }
