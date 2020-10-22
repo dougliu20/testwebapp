@@ -24,6 +24,7 @@ pipeline {
         }    
         stage('Check with SonarCloud') {
             steps {
+                //Link to Sonar Cloud: https://sonarcloud.io
                 withSonarQubeEnv("SonarCloud")
                     {
                     sh "mvn verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar"
@@ -45,8 +46,7 @@ pipeline {
         }
         stage('Rollout') {
             steps {
-                    sh 'kubectl apply -f deploy.yaml'
-                    //sh 'kubectl rollout restart deployment/sample-app'
+                    sh 'kubectl rollout restart deployment/sample-app'
             }
         }
                                                                                                                     }
