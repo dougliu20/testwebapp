@@ -27,8 +27,16 @@ pipeline {
                 //Link to Sonar Cloud: https://sonarcloud.io
                 withSonarQubeEnv("SonarCloud")
                     {
-                    sh "mvn verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar"
+                    sh "mvn verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.branch.name=\"master\""
+                    sleep(10)
                     }
+            }
+        }
+        stage("Check Sonar Result") {
+            steps {
+                timeout(time: 1, unit: 'HOURS') {
+                    waitForQualityGate abortPipeline: true
+                }
             }
         }
         stage('Upload Docker Image') {
