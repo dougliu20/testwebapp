@@ -14,12 +14,12 @@ pipeline {
 
         stage('Test using Maven') {
             steps {
-                sh 'mvn test -Dcheckstyle.skip=true'
+                sh 'mvn test'
             }
         }
-        stage('Build') {
+        stage('Maven Build') {
             steps {
-                sh 'mvn package -DskipTests=true -Dcheckstyle.skip=true'
+                sh 'mvn package -DskipTests=true'
             }
         }    
         stage('Check with SonarCloud') {
@@ -32,7 +32,7 @@ pipeline {
                     }
             }
         }
-        stage("Check Sonar Result") {
+        stage("Sonar Quality Gate ") {
             steps {
                 timeout(time: 1, unit: 'HOURS') {
                     waitForQualityGate abortPipeline: true
@@ -43,9 +43,9 @@ pipeline {
             steps {
                 script {
                    docker.withTool('docker') {
-                        repoId = "dougliu/testweb"
+                        repoId = "dougliu/testweb:${currentBuild.number}"
                         image = docker.build(repoId)
-                        docker.withRegistry("https://registry.hub.docker.com", "dockercred") {
+                        docker.withRegistry("https://registry.hub.docker.com", "DockerCred") {
                         image.push()
                         }
                     }
@@ -54,6 +54,7 @@ pipeline {
         }
         stage('Rollout') {
             steps {
+                    sh 'kubectl apply -f deploy.yaml'
                     sh 'kubectl rollout restart deployment/sample-app'
             }
         }
