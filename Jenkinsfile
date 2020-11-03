@@ -12,19 +12,19 @@ pipeline {
                 sh 'mvn package'
             }
         }
-        stage('Sonarqube') {
-            agent any
-            tools {
-                maven 'M3'
-            }
-            steps {
-                withSonarQubeEnv("SonarCloud")
-                    {
-                    sh "mvn verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.branch.name=\"master\""
-                    sleep(10)
-                    }
-            }
-        }
+        // stage('Sonarqube') {
+        //     agent any
+        //     tools {
+        //         maven 'M3'
+        //     }
+        //     steps {
+        //         withSonarQubeEnv("SonarCloud")
+        //             {
+        //             sh "mvn verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.branch.name=\"master\""
+        //             sleep(10)
+        //             }
+        //     }
+        // }
         stage('docker build') {
             agent any
             steps {
@@ -35,7 +35,7 @@ pipeline {
         stage('docker push') {
             agent any
             steps {
-                withDockerRegistry([credentialsId: 'DockerCred', url: 'https://registry.hub.docker.com']) {
+                withDockerRegistry([credentialsId: 'DockerCred']) {
                     sh "docker push dougliu/testweb:${currentBuild.number}"
                     sh "docker push dougliu/testweb:latest"
                 }
