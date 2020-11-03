@@ -44,20 +44,12 @@ pipeline {
         stage('app deploy') {
             
             agent any
-
             steps {
-                    sh "kubectl apply -f deploy.yaml"
-                    sh "kubectl rollout restart deployment/sample-app"
-                }
-            // agent {
-            //     docker { image '' }
-            // }
-            // steps {
-            //     withKubeConfig([credentialsId: 'kubectl-creds', serverUrl: '']) {
-            //         sh 'kubectl apply -f deploy.yaml'
-            //         sh 'kubectl rollout restart deployment/sample-app'
-            //     }
-            // }
+                withKubeConfig([credentialsId: 'k8sCred', serverUrl: 'https://2C7726959B58F400543260D35A7C7CCA.yl4.us-west-1.eks.amazonaws.com']) {
+                    sh 'kubectl apply -f deploy.yaml'
+                    sh 'kubectl rollout restart deployment/sample-app'
+                 }
+             }
         }
     }
 }
