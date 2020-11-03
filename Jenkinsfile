@@ -36,8 +36,8 @@ pipeline {
             agent any
             steps {
                 withDockerRegistry([credentialsId: 'DockerCred', url: 'https://registry.hub.docker.com']) {
-                    sh 'docker push dougliu/testweb:${currentBuild.number}'
-                    sh 'docker push dougliu/testweb:latest'
+                    sh "docker push dougliu/testweb:${currentBuild.number}"
+                    sh "docker push dougliu/testweb:latest"
                 }
             }
         }
@@ -46,8 +46,8 @@ pipeline {
             agent any
 
             steps {
-                    sh 'kubectl apply -f deploy.yaml'
-                    sh 'kubectl rollout restart deployment/sample-app'
+                    sh "kubectl apply -f deploy.yaml"
+                    sh "kubectl rollout restart deployment/sample-app"
                 }
             // agent {
             //     docker { image '' }
