@@ -2,17 +2,31 @@ pipeline {
 
     agent any
 
+    tools {
+        maven 'M3'
+    }
+
     stages {
-        stage('poull from github') {
+
+        stage('pull from github') {
             steps {
                 git url: "https://github.com/dougliu20/testwebapp", branch: "master"
             }
         }
 
-        stage('sonarqube quality check') {
-            tools {
-                maven 'M3'
+        stage('maven test') {
+            steps {
+                sh 'mvn test'
             }
+        }
+
+        stage('maven build') {
+            steps {
+                sh 'mvn package -DskipTests=true'
+            }
+        }
+
+        stage('sonarqube quality check') {
             steps {
                 withSonarQubeEnv("SonarCloud")
                     {
@@ -32,7 +46,6 @@ pipeline {
         }
 
         stage('docker build and tag') {
-            agent any
             steps {
                 sh "docker build -t dougliu/testweb:${currentBuild.number} ."
                 sh "docker tag dougliu/testweb:${currentBuild.number} dougliu/testweb:latest"
@@ -40,7 +53,6 @@ pipeline {
         }
 
         stage('docker push to dockerhub') {
-            agent any
             steps {
                 withDockerRegistry([credentialsId: 'DockerCred', url: '']) {
                     sh "docker push dougliu/testweb:${currentBuild.number}"
@@ -48,9 +60,8 @@ pipeline {
                 }
             }
         }
-        
+
         stage('deploy to remote K8S cluster') {
-            agent any
             steps {
                 withKubeConfig([credentialsId: 'k8sCred', serverUrl: '${KUBEURL}']) {
                     sh 'kubectl apply -f deploy.yaml'
