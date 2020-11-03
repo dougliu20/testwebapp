@@ -1,30 +1,23 @@
 pipeline {
-    agent any
 
-    tools {
-        maven 'M3'
-    }
+    agent none
 
     stages {
-        stage('Pull from Git') {
+        stage('build') {
+            agent any
+            tools {
+                maven 'M3'
+            }
             steps {
-                git url: "https://github.com/dougliu20/testwebapp", branch: "master"
+                sh 'mvn package'
             }
         }
-
-        stage('Test using Maven') {
-            steps {
-                sh 'mvn test'
+        stage('Sonarqube') {
+            agent any
+            tools {
+                maven 'M3'
             }
-        }
-        stage('Maven Build') {
             steps {
-                sh 'mvn package -DskipTests=true'
-            }
-        }    
-        stage('Check with SonarCloud') {
-            steps {
-                //Link to Sonar Cloud: https://sonarcloud.io
                 withSonarQubeEnv("SonarCloud")
                     {
                     sh "mvn verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.branch.name=\"master\""
@@ -32,31 +25,42 @@ pipeline {
                     }
             }
         }
-        stage("Sonar Quality Gate ") {
+        stage('docker build') {
+            agent {
+                docker { image 'docker' }
+            }
             steps {
-                timeout(time: 1, unit: 'HOURS') {
-                    waitForQualityGate abortPipeline: true
+                sh "docker build -t dougliu/testweb:${currentBuild.number} ."
+            }
+        }
+        stage('docker push') {
+            agent {
+                docker { image 'docker' }
+            }
+            steps {
+                withDockerRegistry([credentialsId: 'DockerCred', url: 'https://registry.hub.docker.com"']) {
+                    sh "dougliu/testweb:${currentBuild.number}"
+                    sh 'dougliu/testweb:latest'
                 }
             }
         }
-        stage('Upload Docker Image') {
-            steps {
-                script {
-                   docker.withTool('Docker') {
-                        repoId = "dougliu/testweb:${currentBuild.number}"
-                        image = docker.build(repoId)
-                        docker.withRegistry("https://registry.hub.docker.com", "DockerCred") {
-                        image.push()
-                        }
-                    }
-                }
-            }
-        }
-        stage('Rollout') {
+        stage('app deploy') {
+            
+            agent any
+
             steps {
                     sh 'kubectl apply -f deploy.yaml'
                     sh 'kubectl rollout restart deployment/sample-app'
-            }
+                }
+            // agent {
+            //     docker { image '' }
+            // }
+            // steps {
+            //     withKubeConfig([credentialsId: 'kubectl-creds', serverUrl: '']) {
+            //         sh 'kubectl apply -f deploy.yaml'
+            //         sh 'kubectl rollout restart deployment/sample-app'
+            //     }
+            // }
         }
-                                                                                                                    }
+    }
 }
