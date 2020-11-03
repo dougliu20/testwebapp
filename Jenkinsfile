@@ -26,19 +26,15 @@ pipeline {
             }
         }
         stage('docker build') {
-            agent {
-                docker { image 'docker' }
-            }
+            agent any
             steps {
                 sh "docker build -t dougliu/testweb:${currentBuild.number} ."
             }
         }
         stage('docker push') {
-            agent {
-                docker { image 'docker' }
-            }
+            agent any
             steps {
-                withDockerRegistry([credentialsId: 'DockerCred', url: 'https://registry.hub.docker.com"']) {
+                withDockerRegistry([credentialsId: 'DockerCred', url: 'https://registry.hub.docker.com']) {
                     sh "dougliu/testweb:${currentBuild.number}"
                     sh 'dougliu/testweb:latest'
                 }
