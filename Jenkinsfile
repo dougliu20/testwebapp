@@ -36,8 +36,8 @@ pipeline {
             agent any
             steps {
                 withDockerRegistry([credentialsId: 'DockerCred', url: 'https://registry.hub.docker.com']) {
-                    sh "dougliu/testweb:${currentBuild.number}"
-                    sh 'dougliu/testweb:latest'
+                    sh 'docker push dougliu/testweb:${currentBuild.number}'
+                    sh 'docker push dougliu/testweb:latest'
                 }
             }
         }
