@@ -42,7 +42,7 @@ pipeline {
         stage('Upload Docker Image') {
             steps {
                 script {
-                   docker.withTool('docker') {
+                   docker.withTool('Docker') {
                         repoId = "dougliu/testweb:${currentBuild.number}"
                         image = docker.build(repoId)
                         docker.withRegistry("https://registry.hub.docker.com", "DockerCred") {
