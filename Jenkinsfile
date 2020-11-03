@@ -8,12 +8,6 @@ pipeline {
 
     stages {
 
-        stage('pull from github') {
-            steps {
-                git url: "https://github.com/dougliu20/testwebapp", branch: "master"
-            }
-        }
-
         stage('maven test') {
             steps {
                 sh 'mvn test'
@@ -38,7 +32,6 @@ pipeline {
 
         stage('sonar quality gate') {
             steps {
-                withSonarQubeEnv("SonarCloud")
                 timeout(time: 1, unit: 'HOURS') {
                     waitForQualityGate abortPipeline: true
                 }
