@@ -29,7 +29,7 @@ pipeline {
             agent any
             steps {
                 sh "docker build -t dougliu/testweb:${currentBuild.number} ."
-                sh "docker tag dougliu/testweb:${currentBuild.number} alxl/sample-spring-boot:latest"
+                sh "docker tag dougliu/testweb:${currentBuild.number} dougliu/testweb:latest"
             }
         }
         stage('docker push') {
