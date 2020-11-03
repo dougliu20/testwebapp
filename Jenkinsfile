@@ -35,7 +35,7 @@ pipeline {
         stage('docker push') {
             agent any
             steps {
-                withDockerRegistry([credentialsId: 'DockerCred']) {
+                withDockerRegistry([credentialsId: 'DockerCred', url: '']) {
                     sh "docker push dougliu/testweb:${currentBuild.number}"
                     sh "docker push dougliu/testweb:latest"
                 }
