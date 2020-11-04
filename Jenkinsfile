@@ -12,7 +12,7 @@ pipeline {
             steps {
                 sh 'mvn test'
             }
-        }
+        
         post {
             success {
                 slackSend(color: 'good', message: "Maven project '${JOB_NAME}' [${GIT_BRANCH}] has been updated and pulled from Github.")
