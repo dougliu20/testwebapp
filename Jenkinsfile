@@ -13,11 +13,11 @@ pipeline {
                 sh 'mvn test'
             }
         }
-        post{
-            success{
+        post {
+            success {
                 slackSend(color: 'good', message: "Maven project '${JOB_NAME}' [${GIT_BRANCH}] has been updated and pulled from Github.")
                 }
-            failure{
+            failure {
                 slackSend(color: 'danger', message: "Maven project '${JOB_NAME}' [${GIT_BRANCH}] failed in unit testing.")
                 }
             }
@@ -45,11 +45,11 @@ pipeline {
                     waitForQualityGate abortPipeline: true
                 }
             }
-            post{
-                success{
+            post {
+                success {
                     slackSend(color: 'good', message: "Maven project '${JOB_NAME}' [${GIT_BRANCH}] has passed the SonarQube quality gate.")
                 }
-                failure{
+                failure {
                     slackSend(color: 'danger', message: "Maven project '${JOB_NAME}' [${GIT_BRANCH}] failed the Sonar quality gate.")
                 }
             }
@@ -69,11 +69,11 @@ pipeline {
                     sh "docker push dougliu/testweb:latest"
                 }
             }
-            post{
-                success{
+            post {
+                success {
                     slackSend(color: 'good', message: "Maven project '${JOB_NAME}' [${GIT_BRANCH}] new image is built and pushed to Dockerhub.")
                     }
-                failure{
+                failure {
                     slackSend(color: 'danger', message: "Maven project '${JOB_NAME}' [${GIT_BRANCH}] failed push the new image to dockerhub.")
                     }
                 }
@@ -86,11 +86,11 @@ pipeline {
                     sh 'kubectl rollout restart deployment/sample-app'
                  }
              }
-            post{
-                success{
+            post {
+                success {
                     slackSend(color: 'good', message: "Maven project '${JOB_NAME}' [${GIT_BRANCH}] deployment to K8S is successful")
                 }
-                failure{
+                failure {
                     slackSend(color: 'danger', message: "Maven project '${JOB_NAME}' [${GIT_BRANCH}] failed to deployer to k8s")
                 }
             }
