@@ -13,15 +13,14 @@ pipeline {
                 sh 'mvn test'
             }
         }
-        post
-        {
+        post{
             success{
                 slackSend(color: 'good', message: "Maven project '${JOB_NAME}' [${GIT_BRANCH}] has been updated and pulled from Github.")
-            }
+                }
             failure{
                 slackSend(color: 'danger', message: "Maven project '${JOB_NAME}' [${GIT_BRANCH}] failed in unit testing.")
+                }
             }
-        }
         }
 
         stage('maven build') {
@@ -33,10 +32,10 @@ pipeline {
         stage('sonarqube quality check') {
             steps {
                 withSonarQubeEnv("SonarCloud")
-                    {
-                    sh "mvn verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.branch.name=\"master\""
-                    sleep(10)
-                    }
+                {
+                sh "mvn verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.branch.name=\"master\""
+                sleep(10)
+                }
             }
         }
 
@@ -46,8 +45,7 @@ pipeline {
                     waitForQualityGate abortPipeline: true
                 }
             }
-            post
-            {
+            post{
                 success{
                     slackSend(color: 'good', message: "Maven project '${JOB_NAME}' [${GIT_BRANCH}] has passed the SonarQube quality gate.")
                 }
@@ -71,16 +69,15 @@ pipeline {
                     sh "docker push dougliu/testweb:latest"
                 }
             }
-        post
-            {
+            post{
                 success{
                     slackSend(color: 'good', message: "Maven project '${JOB_NAME}' [${GIT_BRANCH}] new image is built and pushed to Dockerhub.")
-                }
+                    }
                 failure{
                     slackSend(color: 'danger', message: "Maven project '${JOB_NAME}' [${GIT_BRANCH}] failed push the new image to dockerhub.")
+                    }
                 }
             }
-        }
 
         stage('deploy to remote K8S cluster') {
             steps {
@@ -89,15 +86,14 @@ pipeline {
                     sh 'kubectl rollout restart deployment/sample-app'
                  }
              }
-            post
-                {
-                    success{
-                        slackSend(color: 'good', message: "Maven project '${JOB_NAME}' [${GIT_BRANCH}] deployment to K8S is successful")
-                    }
-                    failure{
-                        slackSend(color: 'danger', message: "Maven project '${JOB_NAME}' [${GIT_BRANCH}] failed to deployer to k8s")
-                    }
+            post{
+                success{
+                    slackSend(color: 'good', message: "Maven project '${JOB_NAME}' [${GIT_BRANCH}] deployment to K8S is successful")
                 }
+                failure{
+                    slackSend(color: 'danger', message: "Maven project '${JOB_NAME}' [${GIT_BRANCH}] failed to deployer to k8s")
+                }
+            }
         }
     }
 }
