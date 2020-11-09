@@ -32,7 +32,7 @@ stages:
       vmImage: $(vmImageName)
     steps:
     - task: Maven@3
-      displayName: Building the JAR using maven
+      displayName: Building the JAR using maven right now
       inputs:
         mavenPomFile: 'pom.xml'
         mavenOptions: '-Xmx3072m'
