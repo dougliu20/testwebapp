@@ -1,0 +1,19 @@
+apiVersion : apps/v1
+kind: Deployment
+metadata:
+  name: twebapp 
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: twebapp
+  template:
+    metadata:
+      labels:
+        app: twebapp 
+    spec:
+      containers:
+        - name: twebapp 
+          image: dougcontainer.azurecr.io/twebapp
+          ports:
+          - containerPort: 80
