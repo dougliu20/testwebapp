@@ -5,7 +5,8 @@ metadata:
 spec:
     type: LoadBalancer
     ports:
-    - port: 80 
-      targetPort: 80
+    - port: 30005
+      targetPort: 8080
+      nodePort: 30005
     selector:
         app: twebapp

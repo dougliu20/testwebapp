@@ -15,5 +15,3 @@ spec:
       containers:
         - name: twebapp 
           image: dougcontainer.azurecr.io/twebapp
-          ports:
-          - containerPort: 8080
