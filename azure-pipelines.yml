@@ -31,6 +31,15 @@ stages:
     pool:
       vmImage: $(vmImageName)
     steps:
+
+    - task: SonarCloudPrepare@1
+      inputs:
+        SonarCloud: 'Sonar'
+        organization: 'dougliu20'
+        scannerMode: 'Other'
+    - task: CmdLine@2
+      inputs:
+        script: 'mvn verify sonar:sonar'
     - task: Maven@3
       displayName: Building the JAR using maven right now
       inputs:
@@ -42,7 +51,8 @@ stages:
         publishJUnitResults: false
         testResultsFiles: '**/TEST-*.xml'
         goals: 'package'
-    - task: Docker@2
+    - 
+      task: Docker@2
       displayName: Build and push an image to container registry
       inputs:
         command: buildAndPush
